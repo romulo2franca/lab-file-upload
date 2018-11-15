@@ -8,7 +8,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const PostSchema = Schema({
   content: String,
-  creatorId: ObjectId,
+  creatorId: [{type: ObjectId, ref:'User'}],
   picPath: String,
   picName: String
 });
