@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="row">
+    {{ message }}
+    <div class="col-sm-6 centered-form">
+      <form action="/posts/{{post.id}}/edit" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea rows="5" cols="33" name="content" class="form-control">
+            {{post.content}}
+          </textarea>
+        </div>
+        <div class="form-group">
+          <label for="picture">Picture</label>
+          <input type="file" name="picture" class="form-control" value="{{post.picName}}">
+        </div>
+        <button type="submit">Commit!</button>
+      </form>
+    </div>
+  </div>
+</div>

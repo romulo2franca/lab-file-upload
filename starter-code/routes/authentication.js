@@ -6,6 +6,13 @@ const {
     ensureLoggedOut
 } = require('connect-ensure-login');
 
+const User = require('../models/user')
+const bcrypt = require('bcrypt');
+const bcryptSalt = 10;
+const multer = require('multer');
+const upload = multer({ dest: './public/uploads/' });
+
+
 router.get('/login', ensureLoggedOut(), (req, res) => {
     res.render('authentication/login', {
         message: req.flash('error')
@@ -31,15 +38,42 @@ router.get('/signup', ensureLoggedOut(), (req, res) => {
 // }));
 
 router.post('/signup', upload.single('picture'), (req, res) => {
-    const {name, email, password} = req.body;
-    
+    const { name, username, email, password } = req.body;
 
-    
-    const path = req.file.filename;
-    const user = new User({
-        name,
-        path: `/uploads/${path}`,
-})
+    if (username === "" || password === "") {
+        res.render("authentication/signup", { message: "Indicate username and password" });
+        return;
+    }
+
+    User.findOne({ username })
+        .then(user => {
+            if (user !== null) {
+                res.render("authentication/signup", { message: "The username already exists" });
+                return;
+            }
+
+            const salt = bcrypt.genSaltSync(bcryptSalt);
+            const hashPass = bcrypt.hashSync(password, salt);
+
+
+            const path = req.file.filename;
+            const newUser = new User({
+                name,
+                username,
+                email,
+                password: hashPass,
+                path: `/uploads/${path}`,
+            })
+            newUser.save(err => {
+                if (err) {
+                    res.render("authentication/signup", { message: "Something went wrong" });
+                } else {
+                    res.redirect("/");
+                }
+            })})
+        .catch(err => {
+            next(err);
+        })
 });
 
 router.get('/profile', ensureLoggedIn('/login'), (req, res) => {

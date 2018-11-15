@@ -8,7 +8,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const CommentsSchema = Schema({
   content: String,
-  authorId: ObjectId,
+  authorId: [{ type: ObjectId, ref: 'User'}],
   imagePath: String,
   imageName: String
 });
